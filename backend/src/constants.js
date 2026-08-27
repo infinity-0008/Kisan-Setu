@@ -66,3 +66,33 @@ export const STATES_OF_INDIA = [
   "Chandigarh", "Puducherry", "Andaman and Nicobar Islands",
   "Dadra and Nagar Haveli and Daman and Diu", "Lakshadweep",
 ];
+
+// MSP (Minimum Support Price) 2024-25 — per quintal in ₹
+export const MSP_PRICES = {
+  wheat: 2275,
+  rice: 2320,
+  maize: 2225,
+  cotton: 7121,
+  sugarcane: 315,
+  mustard: 5650,
+  soybean: 4892,
+  groundnut: 6778,
+  gram: 5335,
+  masoor: 6250,
+  moong: 8682,
+  urad: 7400,
+  barley: 1840,
+  jowar: 3420,
+  bajra: 2500,
+  ragi: 4268,
+};
+
+// Crop-to-scheme mapping for cross-checking MSP vs open market
+export const MSP_SCHEME_MAP = {
+  wheat: "PM-KISAN",
+  rice: "PM-KISAN",
+  maize: "PM-KISAN",
+  cotton: "Cotton Corporation",
+  mustard: "PM-KISAN",
+  soybean: "PM-KISAN",
+};

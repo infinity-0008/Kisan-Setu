@@ -120,6 +120,28 @@ export const reasonEligibility = (farmer, scheme) => {
     });
   }
 
+  // PM Dhan Dhanya Krishi Yojana checks
+  if (scheme.schemeCode === "PM-DDKY") {
+    checks.push({
+      criterion: "Cultivable land",
+      required: "> 0 acres",
+      actual: `${farmer.landHolding} acres`,
+      pass: farmer.landHolding > 0,
+    });
+    checks.push({
+      criterion: "Small/marginal farmer priority",
+      required: "< 2 hectares preferred",
+      actual: `${farmer.landHolding} acres`,
+      pass: farmer.landHolding <= 2,
+    });
+    checks.push({
+      criterion: "Active crops",
+      required: "At least one crop sown",
+      actual: `${farmer.cropsGrown?.length || 0} crops`,
+      pass: (farmer.cropsGrown?.length || 0) > 0,
+    });
+  }
+
   // State check (for non-central schemes)
   if (scheme.state !== "All India") {
     checks.push({

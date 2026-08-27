@@ -99,7 +99,7 @@ export const checkEligibility = (farmer, scheme) => {
   const reasons = [];
   let eligible = true;
 
-  // Basic checks based on scheme category
+  // PM-KISAN checks
   if (scheme.schemeCode === "PM-KISAN") {
     if (farmer.landHolding <= 0) {
       eligible = false;
@@ -110,13 +110,44 @@ export const checkEligibility = (farmer, scheme) => {
     }
   }
 
+  // PMFBY checks
   if (scheme.schemeCode === "PMFBY") {
     if (farmer.cropsGrown?.length === 0) {
       eligible = false;
       reasons.push("No crops registered in profile");
     }
+    if (farmer.beneficiaryStatus?.pmfby) {
+      reasons.push("Already enrolled in PMFBY");
+    }
   }
 
+  // KCC checks
+  if (scheme.schemeCode === "KCC") {
+    if (farmer.landHolding <= 0) {
+      eligible = false;
+      reasons.push("KCC requires land records");
+    }
+    if (farmer.beneficiaryStatus?.kcc) {
+      reasons.push("Already have a Kisan Credit Card");
+    }
+  }
+
+  // PM Dhan Dhanya Krishi Yojana — priority to small/marginal farmers
+  if (scheme.schemeCode === "PM-DDKY") {
+    if (farmer.landHolding <= 0) {
+      eligible = false;
+      reasons.push("Requires cultivable land holding");
+    }
+    if (farmer.landHolding > 2) {
+      reasons.push("Priority given to small/marginal farmers (<2 hectares)");
+    }
+    if (!farmer.cropsGrown || farmer.cropsGrown.length === 0) {
+      eligible = false;
+      reasons.push("Active crop sowing required");
+    }
+  }
+
+  // State check (for non-central schemes)
   if (scheme.state !== "All India" && scheme.state !== farmer.state) {
     eligible = false;
     reasons.push(`Scheme available only in ${scheme.state}`);

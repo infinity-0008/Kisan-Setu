@@ -1,22 +1,15 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import multer from "multer";
 import errorHandler from "./middlewares/error.middleware.js";
 import farmerRoutes from "./routes/farmer.routes.js";
 import schemeRoutes from "./routes/scheme.routes.js";
 import cropRoutes from "./routes/crop.routes.js";
 import videoRoutes from "./routes/video.routes.js";
 import voiceRoutes from "./routes/voice.routes.js";
+import cscRoutes from "./routes/csc.routes.js";
 
 const app = express();
-
-// Configure multer for file uploads
-const storage = multer.memoryStorage();
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
-});
 
 // Middleware
 app.use(
@@ -45,6 +38,7 @@ app.use("/api/v1/schemes", schemeRoutes);
 app.use("/api/v1/crops", cropRoutes);
 app.use("/api/v1/videos", videoRoutes);
 app.use("/api/v1/voice", voiceRoutes);
+app.use("/api/v1/csc", cscRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);

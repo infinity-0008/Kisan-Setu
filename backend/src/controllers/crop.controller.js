@@ -4,7 +4,7 @@ import { fetchMandiPrices, comparePrices } from "../utils/agmarknet.js";
 import logger from "../utils/logger.js";
 
 /**
- * @desc    Create a crop listing
+ * @desc    Create a crop listing (pre-filled from farmer profile)
  * @route   POST /api/v1/crops/list
  * @access  Private (farmer)
  */
@@ -18,10 +18,10 @@ export const createCropListing = async (req, res) => {
       });
     }
 
-    // Pre-fill location from farmer profile
+    // Pre-fill from farmer profile
     const listing = await CropListing.create({
       farmerId: req.user._id,
-      cropType,
+      cropType: cropType || req.user.cropsGrown?.[0],
       variety,
       quantity,
       unit: unit || "quintal",
@@ -29,6 +29,8 @@ export const createCropListing = async (req, res) => {
       location: {
         state: req.user.state,
         district: req.user.district,
+        latitude: req.user.landParcels?.[0]?.geoRef?.coordinates?.[1],
+        longitude: req.user.landParcels?.[0]?.geoRef?.coordinates?.[0],
       },
       status: "listed",
     });
@@ -60,7 +62,7 @@ export const getCropListings = async (req, res) => {
     if (cropType) filter.cropType = cropType;
     if (state) filter["location.state"] = state;
     if (status) filter.status = status;
-    else filter.status = "listed"; // default to active listings
+    else filter.status = "listed";
 
     const listings = await CropListing.find(filter)
       .populate("farmerId", "name kisanId state district")
@@ -102,7 +104,7 @@ export const getMyListings = async (req, res) => {
 };
 
 /**
- * @desc    Compare crop price with mandi rates
+ * @desc    Compare crop price with mandi rates + MSP
  * @route   POST /api/v1/crops/compare-price
  * @access  Private
  */
@@ -116,8 +118,12 @@ export const compareCropPrice = async (req, res) => {
       });
     }
 
-    const mandiPrices = await fetchMandiPrices(cropType, req.user.state);
-    const comparison = comparePrices(expectedPrice, mandiPrices);
+    // Get farmer coordinates for distance calculation
+    const farmerLat = req.user.landParcels?.[0]?.geoRef?.coordinates?.[1];
+    const farmerLon = req.user.landParcels?.[0]?.geoRef?.coordinates?.[0];
+
+    const mandiPrices = await fetchMandiPrices(cropType, req.user.state, farmerLat, farmerLon);
+    const comparison = comparePrices(expectedPrice, mandiPrices, cropType);
 
     return res.status(HTTP_STATUS.OK).json({
       cropType,
@@ -142,7 +148,10 @@ export const getMandiPrices = async (req, res) => {
     const { cropType } = req.params;
     const state = req.query.state || req.user.state;
 
-    const prices = await fetchMandiPrices(cropType, state);
+    const farmerLat = req.user.landParcels?.[0]?.geoRef?.coordinates?.[1];
+    const farmerLon = req.user.landParcels?.[0]?.geoRef?.coordinates?.[0];
+
+    const prices = await fetchMandiPrices(cropType, state, farmerLat, farmerLon);
 
     return res.status(HTTP_STATUS.OK).json({
       cropType,
