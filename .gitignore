@@ -311,6 +311,7 @@ poetry.toml
 pyrightconfig.json
 
 AgriSense-AI/
+frontend/
 
 
 # End of https://www.toptal.com/developers/gitignore/api/node,python

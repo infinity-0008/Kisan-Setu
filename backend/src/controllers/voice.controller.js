@@ -11,7 +11,6 @@ import logger from "../utils/logger.js";
  */
 export const processVoiceQuery = async (req, res) => {
   try {
-    // Check for audio file
     if (!req.file) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         message: "Audio file is required",
@@ -54,7 +53,7 @@ export const processVoiceQuery = async (req, res) => {
       intent: pipelineResult.intent,
       response: {
         text: responseText,
-        audioUrl: null, // In production: upload TTS audio to Cloudinary
+        audioUrl: null,
         sources: pipelineResult.response.sources,
         confidence: pipelineResult.response.confidence,
       },

@@ -8,6 +8,7 @@ import cropRoutes from "./routes/crop.routes.js";
 import videoRoutes from "./routes/video.routes.js";
 import voiceRoutes from "./routes/voice.routes.js";
 import cscRoutes from "./routes/csc.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/api/v1/crops", cropRoutes);
 app.use("/api/v1/videos", videoRoutes);
 app.use("/api/v1/voice", voiceRoutes);
 app.use("/api/v1/csc", cscRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);
