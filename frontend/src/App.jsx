@@ -1,66 +1,78 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import MainLayout from './layouts/MainLayout';
+import Splash from './pages/Splash/Splash';
+import Login from './pages/Login/Login';
+import ProfileCreation from './pages/Onboarding/ProfileCreation';
+import Home from './pages/Home/Home';
+import Chat from './pages/Chat/Chat';
+import SchemesList from './pages/Schemes/SchemesList';
+import SchemeDetails from './pages/Schemes/SchemeDetails';
+import SellCrop from './pages/Marketplace/SellCrop';
+import MandiBhav from './pages/Marketplace/MandiBhav';
+import MySales from './pages/Marketplace/MySales';
+import Profile from './pages/Profile/Profile';
+import AdminLogin from './pages/Admin/AdminLogin';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import { useAuth } from './context/AuthContext';
 
-// Farmer screens
-import LoginScreen from "./components/auth/LoginScreen";
-import OTPScreen from "./components/auth/OTPScreen";
-import HomeScreen from "./components/home/HomeScreen";
-import SchemesScreen from "./components/schemes/SchemesScreen";
-import CropSellScreen from "./components/crops/CropSellScreen";
-import ProfileScreen from "./components/profile/ProfileScreen";
-import ResultScreen from "./components/common/ResultScreen";
-import EscalationScreen from "./components/common/EscalationScreen";
-import CSCHelpScreen from "./components/common/CSCHelpScreen";
+// Protected Route Guard for Farmers
+const FarmerRoute = ({ children }) => {
+  const { isFarmerAuthenticated, loading } = useAuth();
+  if (loading) return null;
+  return isFarmerAuthenticated ? children : <Navigate to="/login" replace />;
+};
 
-// Admin screens
-import AdminLoginScreen from "./components/admin/AdminLoginScreen";
-import AdminDashboard from "./components/admin/AdminDashboard";
-import AdminFarmers from "./components/admin/AdminFarmers";
-import AdminSchemes from "./components/admin/AdminSchemes";
-import AdminListings from "./components/admin/AdminListings";
-import AdminSystem from "./components/admin/AdminSystem";
+// Public Only Route Guard for Farmer Login/Splash (Redirects to /home if already logged in)
+const PublicFarmerRoute = ({ children }) => {
+  const { isFarmerAuthenticated, loading } = useAuth();
+  if (loading) return null;
+  return isFarmerAuthenticated ? <Navigate to="/home" replace /> : children;
+};
 
-function ProtectedRoute({ children }) {
-  const { token } = useAuth();
-  return token ? children : <Navigate to="/" />;
-}
+// Protected Route Guard for Admin
+const AdminRoute = ({ children }) => {
+  const { isAdminAuthenticated, loading } = useAuth();
+  if (loading) return null;
+  return isAdminAuthenticated ? children : <Navigate to="/admin/login" replace />;
+};
 
-function PublicRoute({ children }) {
-  const { token } = useAuth();
-  return token ? <Navigate to="/home" /> : children;
-}
-
-function AdminProtectedRoute({ children }) {
-  const token = localStorage.getItem("adminToken");
-  return token ? children : <Navigate to="/admin/login" />;
-}
+// Public Only Route Guard for Admin Login
+const PublicAdminRoute = ({ children }) => {
+  const { isAdminAuthenticated, loading } = useAuth();
+  if (loading) return null;
+  return isAdminAuthenticated ? <Navigate to="/admin/dashboard" replace /> : children;
+};
 
 function App() {
   return (
-    <AuthProvider>
+    <BrowserRouter>
       <Routes>
+        {/* Admin Console Routes */}
+        <Route path="/admin/login" element={<PublicAdminRoute><AdminLogin /></PublicAdminRoute>} />
+        <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+
         {/* Farmer Mobile App Routes */}
-        <Route path="/" element={<PublicRoute><LoginScreen /></PublicRoute>} />
-        <Route path="/otp" element={<PublicRoute><OTPScreen /></PublicRoute>} />
-        <Route path="/home" element={<ProtectedRoute><HomeScreen /></ProtectedRoute>} />
-        <Route path="/schemes" element={<ProtectedRoute><SchemesScreen /></ProtectedRoute>} />
-        <Route path="/crops" element={<ProtectedRoute><CropSellScreen /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><ProfileScreen /></ProtectedRoute>} />
-        <Route path="/result" element={<ProtectedRoute><ResultScreen /></ProtectedRoute>} />
-        <Route path="/escalation" element={<ProtectedRoute><EscalationScreen /></ProtectedRoute>} />
-        <Route path="/csc-help" element={<ProtectedRoute><CSCHelpScreen /></ProtectedRoute>} />
-
-        {/* Admin Corporate Desktop SaaS Routes (MongoDB Atlas Style) */}
-        <Route path="/admin/login" element={<AdminLoginScreen />} />
-        <Route path="/admin" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
-        <Route path="/admin/farmers" element={<AdminProtectedRoute><AdminFarmers /></AdminProtectedRoute>} />
-        <Route path="/admin/schemes" element={<AdminProtectedRoute><AdminSchemes /></AdminProtectedRoute>} />
-        <Route path="/admin/listings" element={<AdminProtectedRoute><AdminListings /></AdminProtectedRoute>} />
-        <Route path="/admin/system" element={<AdminProtectedRoute><AdminSystem /></AdminProtectedRoute>} />
-
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<PublicFarmerRoute><Splash /></PublicFarmerRoute>} />
+          <Route path="/login" element={<PublicFarmerRoute><Login /></PublicFarmerRoute>} />
+          <Route path="/onboarding" element={<FarmerRoute><ProfileCreation /></FarmerRoute>} />
+          
+          {/* Main Farmer App Protected Routes */}
+          <Route path="/home" element={<FarmerRoute><Home /></FarmerRoute>} />
+          <Route path="/chat" element={<FarmerRoute><Chat /></FarmerRoute>} />
+          <Route path="/schemes" element={<FarmerRoute><SchemesList /></FarmerRoute>} />
+          <Route path="/schemes/:id" element={<FarmerRoute><SchemeDetails /></FarmerRoute>} />
+          <Route path="/sell" element={<FarmerRoute><SellCrop /></FarmerRoute>} />
+          <Route path="/mandi-bhav" element={<FarmerRoute><MandiBhav /></FarmerRoute>} />
+          <Route path="/sales" element={<FarmerRoute><MySales /></FarmerRoute>} />
+          <Route path="/profile" element={<FarmerRoute><Profile /></FarmerRoute>} />
+          
+          {/* Fallback Route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
       </Routes>
-    </AuthProvider>
+    </BrowserRouter>
   );
 }
 

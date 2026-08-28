@@ -7,7 +7,7 @@ const api = axios.create({
   },
 });
 
-// Attach token to every request
+// Interceptor to attach Authorization Bearer token to requests
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -16,52 +16,66 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 errors
+// Interceptor to handle unauthenticated 401 response
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("farmer");
-      window.location.href = "/";
+      if (!window.location.pathname.includes("/login") && !window.location.pathname.includes("/admin/login")) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("farmer");
+        localStorage.removeItem("admin");
+      }
     }
     return Promise.reject(error);
   }
 );
 
-// Auth API
-export const sendOTP = (kisanId, mobile) =>
-  api.post("/farmers/send-otp", { kisanId, mobile });
+// Farmer Auth API (Mobile Number Driven with auto-linked Kisan ID)
+export const sendOTP = (mobile, kisanId = null) =>
+  api.post("/farmers/send-otp", { mobile, ...(kisanId ? { kisanId } : {}) });
 
-export const verifyOTP = (kisanId, otp) =>
-  api.post("/farmers/verify-otp", { kisanId, otp });
+export const verifyOTP = (mobile, otp, kisanId = null) =>
+  api.post("/farmers/verify-otp", { mobile, otp, ...(kisanId ? { kisanId } : {}) });
 
-export const getProfile = () => api.get("/farmers/profile");
+export const getFarmerProfile = () => api.get("/farmers/profile");
 
-// Voice API
+export const syncAgriStack = () => api.post("/farmers/sync-agristack");
+
+// AI Saathi / Voice & Text Query API
+export const sendTextQuery = (query) =>
+  api.post("/voice/text-query", { query });
+
 export const sendVoiceQuery = (formData) =>
   api.post("/voice/query", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-export const sendTextQuery = (query) =>
-  api.post("/voice/text-query", { query });
-
 // Scheme API
-export const querySchemes = (query) =>
-  api.post("/schemes/query", { query });
-
 export const getAllSchemes = (params) =>
   api.get("/schemes", { params });
+
+export const getSchemeByCode = (schemeCode) =>
+  api.get(`/schemes/${schemeCode}`);
+
+export const querySchemes = (query) =>
+  api.post("/schemes/query", { query });
 
 export const applyForScheme = (schemeCode) =>
   api.post(`/schemes/${schemeCode}/apply`);
 
-// Crop API
+export const getMyApplications = () =>
+  api.get("/schemes/my-applications");
+
+// Crop Marketplace API
 export const createCropListing = (data) =>
   api.post("/crops/list", data);
 
-export const getMyListings = () => api.get("/crops/my-listings");
+export const getCropListings = (params) =>
+  api.get("/crops/listings", { params });
+
+export const getMyListings = () =>
+  api.get("/crops/my-listings");
 
 export const compareCropPrice = (data) =>
   api.post("/crops/compare-price", data);
@@ -69,17 +83,41 @@ export const compareCropPrice = (data) =>
 export const getMandiPrices = (cropType) =>
   api.get(`/crops/mandi-prices/${cropType}`);
 
-// Video API
-export const getRecommendedVideos = () =>
-  api.get("/videos/recommended");
+// Admin API
+export const adminLogin = (username, password) =>
+  api.post("/admin/login", { username, password });
 
-export const getAllVideos = (params) =>
-  api.get("/videos", { params });
+export const getAdminStats = () =>
+  api.get("/admin/stats");
 
-// CSC API
-export const escalateQuery = (data) =>
-  api.post("/csc/escalate", data);
+export const getSystemHealth = () =>
+  api.get("/admin/health");
 
-export const getEscalations = () => api.get("/csc/escalations");
+export const listAdminFarmers = (params) =>
+  api.get("/admin/farmers", { params });
+
+export const createAdminFarmer = (data) =>
+  api.post("/admin/farmers", data);
+
+export const verifyFarmerById = (id, verified) =>
+  api.patch(`/admin/farmers/${id}/verify`, { verified });
+
+export const deleteFarmerById = (id) =>
+  api.delete(`/admin/farmers/${id}`);
+
+export const listAdminSchemes = () =>
+  api.get("/admin/schemes");
+
+export const createAdminScheme = (data) =>
+  api.post("/admin/schemes", data);
+
+export const updateAdminScheme = (id, data) =>
+  api.put(`/admin/schemes/${id}`, data);
+
+export const deleteAdminScheme = (id) =>
+  api.delete(`/admin/schemes/${id}`);
+
+export const listAdminListings = (params) =>
+  api.get("/admin/listings", { params });
 
 export default api;

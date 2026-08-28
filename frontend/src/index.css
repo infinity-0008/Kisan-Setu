@@ -1,234 +1,73 @@
-@import "tailwindcss";
-
-/* ============================================================
-   KISAN SETU FULL DESKTOP PLATFORM DESIGN SYSTEM
-   Full-width desktop layouts for both Farmer & Admin portals
-   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* GOI Official Farmer Theme */
-  --goi-saffron: #FF9933;
-  --goi-white: #FFFFFF;
-  --goi-green: #138808;
-  --goi-navy: #000080;
-  
-  --goi-primary: #006837;
-  --goi-green-dark: #004D28;
-  --goi-green-light: #F0FDF4;
-  --goi-green-border: #BBF7D0;
-  
-  --goi-bg: #F8FAFC;
-  --goi-surface: #FFFFFF;
-  --goi-border: #E2E8F0;
-  
-  --goi-text-main: #0F172A;
-  --goi-text-sub: #475569;
-  --goi-text-muted: #94A3B8;
+  /* Colors */
+  --primary: #12b76a; /* Green from Kisan Setu logo and buttons */
+  --primary-dark: #0e9655;
+  --primary-light: #e6f6ec; /* Light green background */
+  --secondary: #f0fdf4; 
+  --text-primary: #1d2939; /* Dark gray */
+  --text-secondary: #475467;
+  --text-tertiary: #98a2b3;
+  --bg-main: #fcfcfd;
+  --bg-card: #ffffff;
+  --border-light: #eaecf0;
+  --error: #f04438;
+  --warning: #f79009;
+  --success: #12b76a;
 
-  /* MongoDB Atlas SaaS Admin Theme */
-  --atlas-sidebar-bg: #001E2B;
-  --atlas-canvas-bg: #091E28;
-  --atlas-card-bg: #112733;
-  --atlas-card-hover: #173242;
-  --atlas-border: #1D3B4E;
-  --atlas-border-light: #2A4D64;
+  /* Typography */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
   
-  --atlas-emerald: #00ED64;
-  --atlas-emerald-glow: rgba(0, 237, 100, 0.15);
-  --atlas-primary: #006837;
-  --atlas-amber: #FEC84D;
-  --atlas-rose: #F87171;
-  --atlas-blue: #38BDF8;
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
   
-  --atlas-text-primary: #F8FAFC;
-  --atlas-text-secondary: #94A3B8;
-  --atlas-text-muted: #64748B;
+  /* Borders */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
 }
 
-/* ============================================================
-   BASE RESET
-   ============================================================ */
-*, *::before, *::after {
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-html {
-  font-size: 16px;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-               'Noto Sans Devanagari', 'Inter', Arial, sans-serif;
-  background-color: var(--goi-bg);
-  color: var(--goi-text-main);
-  min-height: 100vh;
+html, body {
+  font-family: var(--font-family);
+  background-color: #f4f5f7; /* White / light gray outside phone range */
+  color: var(--text-primary);
   width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 #root {
   width: 100%;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  position: relative;
 }
 
-/* ============================================================
-   FARMER DESKTOP APP STYLING
-   ============================================================ */
-.farmer-desktop-wrapper {
-  width: 100%;
-  min-height: 100vh;
-  background-color: var(--goi-bg);
-  display: flex;
-  flex-direction: column;
+/* Reset buttons and inputs */
+button, input, select, textarea {
+  font-family: inherit;
+  border: none;
+  background: none;
+  outline: none;
 }
 
-/* Top Tricolor Bar */
-.goi-tricolor-strip {
-  height: 4px;
-  width: 100%;
-  background: linear-gradient(to right, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%);
-}
-
-/* Official Cards */
-.goi-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.03);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.goi-card:hover {
-  border-color: #CBD5E1;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-}
-
-.goi-card-header {
-  border-bottom: 1px solid #F1F5F9;
-  background: #F8FAFC;
-  padding: 12px 18px;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-}
-
-.goi-badge-verified {
-  background: #DCFCE7;
-  color: #15803D;
-  border: 1px solid #86EFAC;
-  font-weight: 700;
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 6px;
-}
-
-.goi-badge-pending {
-  background: #FEF3C7;
-  color: #B45309;
-  border: 1px solid #FDE68A;
-  font-weight: 700;
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 6px;
-}
-
-/* ============================================================
-   MONGODB ATLAS ADMIN PORTAL STYLING
-   ============================================================ */
-.atlas-bg {
-  background-color: var(--atlas-canvas-bg);
-  color: var(--atlas-text-primary);
-  min-height: 100vh;
-}
-
-.atlas-sidebar {
-  background-color: var(--atlas-sidebar-bg);
-  border-right: 1px solid var(--atlas-border);
-}
-
-.atlas-card {
-  background-color: var(--atlas-card-bg);
-  border: 1px solid var(--atlas-border);
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  transition: border-color 0.2s ease;
-}
-
-.atlas-card:hover {
-  border-color: var(--atlas-border-light);
-}
-
-.atlas-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.atlas-table th {
-  background-color: #0E2430;
-  color: var(--atlas-text-secondary);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--atlas-border);
-  text-align: left;
-}
-
-.atlas-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(29, 59, 78, 0.6);
-  font-size: 13px;
-  color: var(--atlas-text-primary);
-  background-color: var(--atlas-card-bg);
-}
-
-.atlas-table tr:hover td {
-  background-color: var(--atlas-card-hover);
-}
-
-.atlas-badge-emerald {
-  background: rgba(0, 237, 100, 0.12);
-  color: #00ED64;
-  border: 1px solid rgba(0, 237, 100, 0.3);
-  font-weight: 600;
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 20px;
-}
-
-.atlas-badge-blue {
-  background: rgba(56, 189, 248, 0.12);
-  color: #38BDF8;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  font-weight: 600;
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 20px;
-}
-
-.atlas-badge-amber {
-  background: rgba(254, 200, 77, 0.12);
-  color: #FEC84D;
-  border: 1px solid rgba(254, 200, 77, 0.3);
-  font-weight: 600;
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 20px;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--goi-bg);
-}
-::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 4px;
+a {
+  text-decoration: none;
+  color: inherit;
 }
