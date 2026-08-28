@@ -6,7 +6,7 @@ import {
   convertToSpeech,
   convertToText,
 } from "../controllers/voice.controller.js";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { optionalVerifyToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -25,8 +25,8 @@ const upload = multer({
   },
 });
 
-// All routes require authentication
-router.use(verifyToken);
+// Voice and Chat routes support optional authentication for seamless fallback
+router.use(optionalVerifyToken);
 
 // Voice query (audio in → text response)
 router.post("/query", upload.single("audio"), processVoiceQuery);

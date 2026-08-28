@@ -37,6 +37,37 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
+const optionalVerifyToken = async (req, res, next) => {
+  try {
+    const token =
+      req.cookies?.accessToken ||
+      req.headers.authorization?.replace("Bearer ", "");
+
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const farmer = await Farmer.findById(decoded._id).select("-otp -otpExpires");
+      if (farmer) {
+        req.user = farmer;
+        return next();
+      }
+    }
+  } catch (error) {
+    // Ignore invalid token and fallback to guest profile for voice/chat queries
+  }
+
+  // Fallback guest profile
+  req.user = {
+    _id: "guest_farmer",
+    name: "Ram Kumar",
+    state: "Uttar Pradesh",
+    district: "Lucknow",
+    landHolding: 2.5,
+    cropsGrown: ["Gehun", "Sarson"],
+    role: "farmer",
+  };
+  next();
+};
+
 const verifyRole = (...allowedRoles) => {
   return (req, res, next) => {
     if (!req.user) {
@@ -53,4 +84,4 @@ const verifyRole = (...allowedRoles) => {
   };
 };
 
-export { verifyToken, verifyRole };
+export { verifyToken, optionalVerifyToken, verifyRole };

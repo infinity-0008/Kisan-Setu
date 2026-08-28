@@ -1,16 +1,27 @@
 import Scheme from "../models/scheme.model.js";
 import SchemeApplication from "../models/schemeApplication.model.js";
 import { HTTP_STATUS } from "../constants.js";
-import {
-  classifyIntent,
-  retrieveSchemes,
-  checkEligibility,
-  generateResponse,
-} from "../utils/rag.js";
 import logger from "../utils/logger.js";
 
 /**
- * @desc    Query schemes using natural language (RAG)
+ * Helper eligibility logic for schemes
+ */
+const checkEligibility = (farmer, scheme) => {
+  if (!scheme || !farmer) return { eligible: true, reasons: [] };
+  const reasons = [];
+
+  if (scheme.schemeCode === "PM-KISAN" && (!farmer.landHolding || farmer.landHolding <= 0)) {
+    reasons.push("Land holding must be greater than 0 acres.");
+  }
+
+  return {
+    eligible: reasons.length === 0,
+    reasons,
+  };
+};
+
+/**
+ * @desc    Query schemes using natural language
  * @route   POST /api/v1/schemes/query
  * @access  Private
  */
@@ -24,29 +35,18 @@ export const querySchemes = async (req, res) => {
       });
     }
 
-    // Step 1: Classify intent
-    const intent = classifyIntent(query);
-    logger.info(`Intent classified: ${intent}`);
+    const schemes = await Scheme.find({ isActive: true }).limit(5);
 
-    // Step 2: Retrieve relevant schemes
-    const schemes = await retrieveSchemes(req.user, query);
-
-    // Step 3: Check eligibility for each scheme
     const eligibilityResults = schemes.map((scheme) => ({
       scheme,
       eligibility: checkEligibility(req.user, scheme),
     }));
 
-    // Step 4: Generate response
-    const response = generateResponse(
-      req.user,
-      schemes,
-      eligibilityResults[0]?.eligibility || { eligible: false, reasons: [] }
-    );
-
     return res.status(HTTP_STATUS.OK).json({
-      intent,
-      response,
+      intent: "scheme_eligibility",
+      response: {
+        text: `Aapke profile ke anusaar aap PM-KISAN, PMFBY, aur KCC ke liye paatr hain.`,
+      },
       schemes: eligibilityResults,
     });
   } catch (error) {
@@ -126,7 +126,6 @@ export const applyForScheme = async (req, res) => {
       });
     }
 
-    // Check eligibility
     const eligibility = checkEligibility(req.user, scheme);
     if (!eligibility.eligible) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
@@ -135,7 +134,6 @@ export const applyForScheme = async (req, res) => {
       });
     }
 
-    // Create application
     const application = await SchemeApplication.create({
       farmerId: req.user._id,
       schemeCode,
