@@ -242,10 +242,9 @@ npm run dev
 
 **Crafted with ❤️ for Indian Farmers — Smart India Hackathon 2026**
 
-| Member | Role |
-|--------|------|
-| **Abhay Yadav** | Full-Stack Lead · Backend Architecture · RAG AI Integration |
-| **Kunal Kundaliya** | Frontend Developer · UI/UX Design · Mobile Experience |
+| Owner | Role |
+|-------|------|
+| **Abhay Yadav** | Sole Creator · Full-Stack Architecture · RAG AI Integration · UI/UX |
 
 ---
 
