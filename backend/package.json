@@ -1,0 +1,52 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "SIH-PROJECT : Kisan Setu ",
+  "keywords": [
+    "javascript",
+    "backend",
+    "node",
+    "js"
+  ],
+  "homepage": "https://github.com/infinity-0008/SIH-Project#readme",
+  "bugs": {
+    "url": "https://github.com/infinity-0008/SIH-Project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/infinity-0008/SIH-Project.git"
+  },
+  "license": "ISC",
+  "author": "Abhay Yadav,Kunal Kundaliya",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "seed": "node src/scripts/seedSchemes.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prettier": "^3.9.6"
+  },
+  "dependencies": {
+    "@langchain/core": "^1.2.9",
+    "@langchain/google-genai": "^2.3.0",
+    "@langchain/openai": "^1.5.10",
+    "cloudinary": "^1.41.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "form-data": "^4.0.6",
+    "jsonwebtoken": "^9.0.3",
+    "langchain": "^1.5.10",
+    "mongodb": "^7.6.0",
+    "mongoose": "^9.9.3",
+    "mongoose-aggregate-paginate-v2": "^1.1.5",
+    "multer": "^2.2.0",
+    "multer-storage-cloudinary": "^4.0.0",
+    "socks": "^2.8.9"
+  }
+}

@@ -1,0 +1,404 @@
+{
+  "info": {
+    "name": "Kisan Setu API",
+    "description": "SIH 2026 — Kisan Setu Backend API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "farmerId",
+      "value": ""
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health",
+            "description": "Check if API is running"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Farmer Auth",
+      "item": [
+        {
+          "name": "POST /send-otp",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/farmers/send-otp",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kisanId\": \"KID-2024-001\",\n  \"mobile\": \"9876543210\"\n}"
+            },
+            "description": "Send OTP to farmer mobile. Returns kisanId + expiresIn."
+          }
+        },
+        {
+          "name": "POST /verify-otp",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/farmers/verify-otp",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kisanId\": \"KID-2024-001\",\n  \"otp\": \"123456\"\n}"
+            },
+            "description": "Verify OTP and login. Returns JWT token + farmer object. Set token in collection variable."
+          }
+        },
+        {
+          "name": "GET /profile",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/farmers/profile",
+            "description": "Get logged-in farmer profile. Requires token."
+          }
+        },
+        {
+          "name": "POST /sync-agristack",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/farmers/sync-agristack",
+            "description": "Sync farmer profile from AgriStack. Requires token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Schemes",
+      "item": [
+        {
+          "name": "GET /schemes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/schemes?state=Uttar+Pradesh",
+              "query": [
+                { "key": "state", "value": "Uttar Pradesh", "description": "Filter by state" }
+              ]
+            },
+            "description": "List all schemes. Optional state filter."
+          }
+        },
+        {
+          "name": "POST /schemes/query",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/schemes/query",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"मुझे गेहूं के लिए MSP मिलेगा?\"\n}"
+            },
+            "description": "RAG query — sends natural language question, returns matched schemes + eligibility."
+          }
+        },
+        {
+          "name": "POST /schemes/:code/apply",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/schemes/PM-KISAN/apply",
+            "description": "Apply for a scheme. Requires token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crops",
+      "item": [
+        {
+          "name": "POST /crops/list",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/crops/list",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cropType\": \"wheat\",\n  \"quantity\": 50,\n  \"unit\": \"quintal\",\n  \"expectedPrice\": 2300,\n  \"location\": \"Lucknow\"\n}"
+            },
+            "description": "Create a new crop listing. Requires token."
+          }
+        },
+        {
+          "name": "GET /crops/my-listings",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/crops/my-listings",
+            "description": "Get current farmer's listings. Requires token."
+          }
+        },
+        {
+          "name": "POST /crops/compare-price",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/crops/compare-price",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cropType\": \"wheat\",\n  \"expectedPrice\": 2200\n}"
+            },
+            "description": "Compare expected price vs MSP. Returns recommendation."
+          }
+        },
+        {
+          "name": "GET /crops/mandi-prices/:cropType",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/crops/mandi-prices/wheat",
+            "description": "Get nearby mandi prices for a crop."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Voice",
+      "item": [
+        {
+          "name": "POST /voice/text-query",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/voice/text-query",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"मेरी फसल बेचने के लिए सबसे अच्छी मंडी कौन सी है?\"\n}"
+            },
+            "description": "Send text query via LangGraph pipeline. Returns response + intent + confidence."
+          }
+        },
+        {
+          "name": "POST /voice/query (audio)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/voice/query",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "audio", "type": "file", "src": "" }
+              ]
+            },
+            "description": "Send voice query. Upload audio file. Returns transcribed text + LangGraph response."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Videos",
+      "item": [
+        {
+          "name": "GET /videos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/videos?category=pest-management&lang=hi",
+              "query": [
+                { "key": "category", "value": "pest-management" },
+                { "key": "lang", "value": "hi" }
+              ]
+            },
+            "description": "List videos with optional filters."
+          }
+        },
+        {
+          "name": "GET /videos/recommended",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/videos/recommended",
+            "description": "Get personalized recommended videos. Requires token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "CSC (Help Center)",
+      "item": [
+        {
+          "name": "POST /csc/escalate",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/csc/escalate",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemeCode\": \"PM-KISAN\",\n  \"reason\": \"AI response unclear\",\n  \"queryText\": \"मुझे PM-KISAN के बारे में जानकारी चाहिए\"\n}"
+            },
+            "description": "Escalate a query to CSC operator. Requires token."
+          }
+        },
+        {
+          "name": "GET /csc/escalations",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/csc/escalations",
+            "description": "Get current farmer's escalations. Requires token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "POST /admin/login",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/admin/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"kisan2026\"\n}"
+            },
+            "description": "Admin login. Credentials: admin / kisan2026"
+          }
+        },
+        {
+          "name": "GET /admin/stats",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/stats",
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}" }]
+            },
+            "description": "Dashboard stats. Requires admin token."
+          }
+        },
+        {
+          "name": "GET /admin/farmers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/farmers?page=1&limit=15&search=",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "15" },
+                { "key": "search", "value": "" }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}" }]
+            },
+            "description": "List all farmers (admin). Supports search, pagination."
+          }
+        },
+        {
+          "name": "GET /admin/farmers/:id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/farmers/FARMER_OBJECT_ID",
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}" }]
+            },
+            "description": "Get single farmer detail (admin)."
+          }
+        },
+        {
+          "name": "PATCH /admin/farmers/:id/verify",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/admin/farmers/FARMER_OBJECT_ID/verify",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"verified\": true\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}" }]
+            },
+            "description": "Toggle farmer verification (admin)."
+          }
+        },
+        {
+          "name": "GET /admin/schemes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/schemes",
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}" }]
+            },
+            "description": "List all schemes (admin)."
+          }
+        },
+        {
+          "name": "POST /admin/schemes",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/admin/schemes",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemeCode\": \"TEST-SCHEME\",\n  \"name\": \"Test Scheme\",\n  \"description\": \"A test scheme for demo\",\n  \"category\": \"income-support\",\n  \"source\": \"Ministry of Agriculture\",\n  \"eligibility\": { \"minLand\": 0, \"maxLand\": 100 },\n  \"benefits\": [\"Rs 5000 per year\"],\n  \"documentsRequired\": [\"Aadhaar card\", \"Land records\"],\n  \"tags\": [\"test\", \"demo\"]\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}" }]
+            },
+            "description": "Create new scheme (admin)."
+          }
+        },
+        {
+          "name": "PUT /admin/schemes/:id",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/admin/schemes/SCHEME_OBJECT_ID",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Scheme Name\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}" }]
+            },
+            "description": "Update scheme (admin)."
+          }
+        },
+        {
+          "name": "GET /admin/health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/health",
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}" }]
+            },
+            "description": "System health check (admin)."
+          }
+        }
+      ]
+    }
+  ]
+}
