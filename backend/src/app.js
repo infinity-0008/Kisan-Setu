@@ -23,6 +23,11 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
+// Root route → redirect to Admin Portal
+app.get("/", (req, res) => {
+  res.redirect(process.env.CORS_ORIGIN + "/admin/login");
+});
+
 // Health check
 app.get("/api/v1/health", (req, res) => {
   res.json({
