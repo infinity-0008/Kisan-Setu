@@ -13,19 +13,15 @@ import adminRoutes from "./routes/admin.routes.js";
 const app = express();
 
 
-//hardcoded vercel for cors fix
-const allowedOrigins = [
-  process.env.CORS_ORIGIN,
-  "https://kisan-setu-sigma.vercel.app",
-  "http://localhost:5173",
-  "http://localhost:5174",
-].filter(Boolean);
-
-
-// for vercel cors fix
+// Allowed origins — all Vercel preview + production URLs + localhost
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow: no origin (Postman/curl), localhost, any *.vercel.app, or env CORS_ORIGIN
+    const isLocalhost = !origin || origin.startsWith("http://localhost");
+    const isVercel = origin?.endsWith(".vercel.app");
+    const isEnvOrigin = origin === process.env.CORS_ORIGIN;
+
+    if (isLocalhost || isVercel || isEnvOrigin) {
       callback(null, true);
     } else {
       callback(new Error(`CORS blocked: ${origin}`));
