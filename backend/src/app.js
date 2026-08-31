@@ -38,9 +38,9 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
-// to be able to access the admin using render link
+// Root route
 app.get("/", (req, res) => {
-  res.redirect(process.env.CORS_ORIGIN + "/admin/login");
+  res.json({ message: "🌾 Kisan Setu API is running", status: "ok", version: "1.0.0" });
 });
 
 
