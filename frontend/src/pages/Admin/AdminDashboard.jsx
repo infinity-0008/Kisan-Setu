@@ -36,7 +36,10 @@ const AdminDashboard = () => {
   });
 
   const [newSchemeModal, setNewSchemeModal] = useState(false);
-  const [newSchemeData, setNewSchemeData] = useState({ schemeCode: '', title: '', description: '', benefitDetails: '' });
+  const [newSchemeData, setNewSchemeData] = useState({ 
+    schemeCode: '', name: '', description: '', eligibilityCriteria: '', 
+    benefits: '', state: 'All India', category: 'income-support'
+  });
 
   const { admin, logout } = useAuth();
   const navigate = useNavigate();
@@ -109,9 +112,13 @@ const AdminDashboard = () => {
   const handleCreateScheme = async (e) => {
     e.preventDefault();
     try {
-      await createAdminScheme(newSchemeData);
+      const payload = {
+        ...newSchemeData,
+        benefits: newSchemeData.benefits.split(',').map(b => b.trim()).filter(Boolean),
+      };
+      await createAdminScheme(payload);
       setNewSchemeModal(false);
-      setNewSchemeData({ schemeCode: '', title: '', description: '', benefitDetails: '' });
+      setNewSchemeData({ schemeCode: '', name: '', description: '', eligibilityCriteria: '', benefits: '', state: 'All India', category: 'income-support' });
       loadAllData();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to create scheme.');
@@ -405,17 +412,32 @@ const AdminDashboard = () => {
                       value={newSchemeData.schemeCode} onChange={(e) => setNewSchemeData({...newSchemeData, schemeCode: e.target.value})}
                     />
                     <input 
-                      type="text" placeholder="Title" className={styles.darkInput} required
-                      value={newSchemeData.title} onChange={(e) => setNewSchemeData({...newSchemeData, title: e.target.value})}
+                      type="text" placeholder="Scheme Name / Title" className={styles.darkInput} required
+                      value={newSchemeData.name} onChange={(e) => setNewSchemeData({...newSchemeData, name: e.target.value})}
                     />
                     <input 
-                      type="text" placeholder="Description" className={styles.darkInput} required
+                      type="text" placeholder="Description" className={styles.darkInput}
                       value={newSchemeData.description} onChange={(e) => setNewSchemeData({...newSchemeData, description: e.target.value})}
                     />
                     <input 
-                      type="text" placeholder="Benefits (e.g. ₹6000/yr)" className={styles.darkInput} required
-                      value={newSchemeData.benefitDetails} onChange={(e) => setNewSchemeData({...newSchemeData, benefitDetails: e.target.value})}
+                      type="text" placeholder="Eligibility Criteria (required)" className={styles.darkInput} required
+                      value={newSchemeData.eligibilityCriteria} onChange={(e) => setNewSchemeData({...newSchemeData, eligibilityCriteria: e.target.value})}
                     />
+                    <input 
+                      type="text" placeholder="Benefits (comma separated, e.g. ₹6000/yr, Direct transfer)" className={styles.darkInput}
+                      value={newSchemeData.benefits} onChange={(e) => setNewSchemeData({...newSchemeData, benefits: e.target.value})}
+                    />
+                    <input 
+                      type="text" placeholder="State (e.g. All India / Uttar Pradesh)" className={styles.darkInput} required
+                      value={newSchemeData.state} onChange={(e) => setNewSchemeData({...newSchemeData, state: e.target.value})}
+                    />
+                    <select className={styles.darkInput} value={newSchemeData.category} onChange={(e) => setNewSchemeData({...newSchemeData, category: e.target.value})}>
+                      <option value="income-support">Income Support</option>
+                      <option value="insurance">Insurance</option>
+                      <option value="credit">Credit</option>
+                      <option value="subsidy">Subsidy</option>
+                      <option value="procurement">Procurement</option>
+                    </select>
                     <div style={{ gridColumn: 'span 2', display: 'flex', gap: '8px' }}>
                       <button type="submit" className={styles.primaryBtn} style={{ width: 'auto' }}>Save Scheme</button>
                       <button type="button" className={styles.actionBtn} onClick={() => setNewSchemeModal(false)}>Cancel</button>
