@@ -13,23 +13,12 @@ import adminRoutes from "./routes/admin.routes.js";
 const app = express();
 
 
-// Allowed origins — all Vercel preview + production URLs + localhost
+// Allow all origins (reflects request origin) with credentials enabled for Vercel/Render
 const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow: no origin (Postman/curl), localhost, any *.vercel.app, or env CORS_ORIGIN
-    const isLocalhost = !origin || origin.startsWith("http://localhost");
-    const isVercel = origin?.endsWith(".vercel.app");
-    const isEnvOrigin = origin === process.env.CORS_ORIGIN;
-
-    if (isLocalhost || isVercel || isEnvOrigin) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS blocked: ${origin}`));
-    }
-  },
+  origin: true,
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
 };
 
 
