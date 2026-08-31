@@ -2,6 +2,7 @@ import sys
 import site
 sys.path.insert(0, site.getusersitepackages())
 
+import json
 import os
 from pathlib import Path
 from dataclasses import dataclass
@@ -12,14 +13,24 @@ from config import config
 class RagChunk:
     content: str
     source: str
+    score: int = 1
 
 class RagEngine:
     def __init__(self):
         self.documents = []
-        self._load_pdf_documents()
+        self._load_documents()
 
-    def _load_pdf_documents(self):
-        """Load and extract text from official PDFs in data/documents"""
+    def _load_documents(self):
+        """Load from pre-extracted cache file or extract from PDFs"""
+        if config.CACHE_FILE.exists():
+            try:
+                with open(config.CACHE_FILE, "r", encoding="utf-8") as f:
+                    self.documents = json.load(f)
+                    return
+            except Exception as e:
+                print(f"Error loading document cache: {e}")
+
+        # Fallback to direct PDF parsing
         try:
             from pypdf import PdfReader
             if not config.DOCUMENTS_DIR.exists():
@@ -44,21 +55,27 @@ class RagEngine:
             print("pypdf not installed, skipping PDF reading")
 
     def search_documents(self, query: str) -> list[RagChunk]:
-        """Search PDF content for keywords"""
-        q = query.lower()
-        results = []
+        """Search document content with scoring and keyword matching"""
+        q_tokens = [w for w in query.lower().split() if len(w) >= 3]
+        if not q_tokens:
+            return []
 
+        results = []
         for doc in self.documents:
-            content = doc["content"]
-            source = doc["source"]
+            content = doc.get("content", "")
+            source = doc.get("source", "PDF Document")
             
             paragraphs = content.split("\n\n")
             for p in paragraphs:
-                if any(w in p.lower() for w in q.split() if len(w) > 3):
-                    results.append(RagChunk(content=p.strip()[:400], source=source))
-                    if len(results) >= config.TOP_K:
-                        break
+                p_clean = p.strip()
+                if len(p_clean) < 40:
+                    continue
+                p_lower = p_clean.lower()
+                matches = sum(1 for w in q_tokens if w in p_lower)
+                if matches > 0:
+                    results.append(RagChunk(content=p_clean[:600], source=source, score=matches))
 
-        return results
+        results.sort(key=lambda x: x.score, reverse=True)
+        return results[:config.TOP_K]
 
 rag_engine = RagEngine()

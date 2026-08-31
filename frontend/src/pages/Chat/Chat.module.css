@@ -71,7 +71,7 @@
   border: 1.5px solid #e2e8f0;
   border-radius: 16px;
   width: 100%;
-  max-width: 360px;
+  max-width: 580px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   transition: all 0.2s ease;
@@ -97,7 +97,7 @@
 }
 
 .sleekTitleText {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #065f46;
   letter-spacing: 0.3px;
@@ -134,16 +134,16 @@
 }
 
 .answerTextMain {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 500;
   color: #1e293b;
-  line-height: 1.55;
+  line-height: 1.6;
   white-space: pre-wrap;
 }
 
 .advisoryBox {
   margin-top: 14px;
-  padding: 12px;
+  padding: 12px 14px;
   background-color: #f8fafc;
   border-left: 3.5px solid var(--primary);
   border-radius: 8px;
@@ -153,10 +153,10 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 700;
   color: #0f766e;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .checkIcon {
@@ -164,9 +164,9 @@
 }
 
 .advisoryText {
-  font-size: 13px;
-  color: #475569;
-  line-height: 1.45;
+  font-size: 13.5px;
+  color: #334155;
+  line-height: 1.55;
   white-space: pre-wrap;
 }
 
@@ -184,12 +184,59 @@
   align-items: center;
   gap: 5px;
   font-size: 11px;
-  font-weight: 500;
-  color: #64748b;
-  max-width: 180px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.sourceRag {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.sourceLlm {
+  background-color: #f5f3ff;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+
+.suggestionChipsArea {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 0 10px 0;
+  scrollbar-width: none;
+}
+
+.suggestionChipsArea::-webkit-scrollbar {
+  display: none;
+}
+
+.suggestionChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #334155;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.suggestionChip:hover {
+  background-color: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #0f172a;
 }
 
 .helplineBtn {
@@ -207,7 +254,7 @@
 }
 
 .inputArea {
-  padding: 14px 20px 20px;
+  padding: 10px 16px 16px;
   background-color: var(--bg-card);
   border-top: 1px solid var(--border-light);
 }
@@ -256,9 +303,17 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .sendBtn {
