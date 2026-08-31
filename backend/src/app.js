@@ -12,7 +12,8 @@ import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
 
-// Allowed origins (hardcoded fallback in case env var is missing)
+
+//hardcoded vercel for cors fix
 const allowedOrigins = [
   process.env.CORS_ORIGIN,
   "https://kisan-setu-sigma.vercel.app",
@@ -20,9 +21,10 @@ const allowedOrigins = [
   "http://localhost:5174",
 ].filter(Boolean);
 
+
+// for vercel cors fix
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (Postman, mobile apps, curl)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -34,19 +36,18 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-// Middleware
+
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Handle preflight for all routes
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
-// Root route → redirect to Admin Portal
+// to be able to access the admin using render link
 app.get("/", (req, res) => {
   res.redirect(process.env.CORS_ORIGIN + "/admin/login");
 });
 
-// Health check
+
 app.get("/api/v1/health", (req, res) => {
   res.json({
     status: "ok",
@@ -56,7 +57,7 @@ app.get("/api/v1/health", (req, res) => {
   });
 });
 
-// API Routes
+
 app.use("/api/v1/farmers", farmerRoutes);
 app.use("/api/v1/schemes", schemeRoutes);
 app.use("/api/v1/crops", cropRoutes);
@@ -65,7 +66,7 @@ app.use("/api/v1/voice", voiceRoutes);
 app.use("/api/v1/csc", cscRoutes);
 app.use("/api/v1/admin", adminRoutes);
 
-// Error handler (must be last)
-app.use(errorHandler);
+
+app.use(errorHandler);// check about it 
 
 export default app;

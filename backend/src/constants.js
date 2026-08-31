@@ -14,7 +14,7 @@ export const HTTP_STATUS = {
 
 export const OTP_EXPIRY_MINUTES = 10;
 export const OTP_LENGTH = 6;
-export const JWT_EXPIRY = "7d";
+export const JWT_EXPIRY = "1d";
 
 export const ROLES = {
   FARMER: "farmer",

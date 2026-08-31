@@ -18,30 +18,30 @@ import { verifyToken, verifyRole } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-// Public
+// checkk ???
 router.post("/login", adminLogin);
 
-// Protected — admin only
+// admin token ??
 router.use(verifyToken, verifyRole("admin"));
 
-// Dashboard
+// dashboard here 
 router.get("/stats", getDashboardStats);
 router.get("/health", systemHealth);
 
-// Farmers CRUD
+// for farmers details 
 router.get("/farmers", listFarmers);
 router.post("/farmers", createFarmer);
 router.get("/farmers/:id", getFarmerDetail);
 router.patch("/farmers/:id/verify", verifyFarmerById);
 router.delete("/farmers/:id", deleteFarmer);
 
-// Schemes CRUD
+// schemes
 router.get("/schemes", listSchemes);
 router.post("/schemes", createScheme);
 router.put("/schemes/:id", updateScheme);
 router.delete("/schemes/:id", deleteScheme);
 
-// Listings
+
 router.get("/listings", listListings);
 
 export default router;
